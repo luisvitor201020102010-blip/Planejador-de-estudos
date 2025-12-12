@@ -65,6 +65,8 @@ Métricas gerais (minutos planejados, realizados, % progresso, média de acertos
 Tabela de desempenho por disciplina, também com SUMIF/AVERAGEIF.
 
 "CONFIGURAÇÕES":
+PRIMEIRA LINHA: ["Aluno", "[Nome do Aluno fornecido]"]
+Em seguida:
 Horas/dia, minutos/dia, dias/semana, minutos/semana.
 Lista de disciplinas com dificuldade, prioridade, % do total, minutos/semana.
 Tabela de INTERVALOS DE REVISÃO ESPAÇADA (Fácil/Médio/Difícil).

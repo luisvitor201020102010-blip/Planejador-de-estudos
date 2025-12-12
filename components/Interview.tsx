@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppStep, Difficulty, InterviewData, Subject } from '../types';
 import { METHODOLOGIES } from '../constants';
-import { Plus, Trash2, ArrowRight, BookOpen, Clock, Brain } from 'lucide-react';
+import { Plus, Trash2, ArrowRight, BookOpen, Clock, Brain, User } from 'lucide-react';
 
 interface InterviewProps {
   onComplete: (data: InterviewData) => void;
@@ -11,6 +11,7 @@ interface InterviewProps {
 
 export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep }) => {
   const [data, setData] = useState<InterviewData>({
+    userName: '',
     subjectCount: 1,
     subjects: [{ id: '1', name: '', difficulty: Difficulty.MEDIO, priority: 1, goal: 'Revisar base' }],
     hoursPerDay: 4,
@@ -71,13 +72,36 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
           <p className="text-teal-600">Siga no Instagram @luis_vitor_med</p>
         </div>
       </div>
-      <button
-        onClick={() => setStep(AppStep.INTERVIEW_QUANTITY)}
-        className="group px-8 py-4 bg-teal-600 text-white rounded-xl font-semibold shadow-lg hover:bg-teal-700 transition-all flex items-center space-x-2"
-      >
-        <span>Começar Planejamento</span>
-        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-      </button>
+      
+      <div className="w-full max-w-md space-y-4">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+           <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+             <User className="w-4 h-4 text-teal-600" />
+             Qual seu nome?
+           </label>
+           <input 
+             type="text" 
+             placeholder="Digite seu nome"
+             value={data.userName}
+             onChange={(e) => setData({...data, userName: e.target.value})}
+             className="w-full px-4 py-3 rounded-lg border border-black bg-white focus:ring-2 focus:ring-teal-500 outline-none text-lg text-slate-900 placeholder:text-slate-400"
+           />
+        </div>
+
+        <button
+          onClick={() => {
+             if (data.userName.trim() === '') {
+                 alert("Por favor, digite seu nome para continuar.");
+                 return;
+             }
+             setStep(AppStep.INTERVIEW_QUANTITY);
+          }}
+          className="w-full group px-8 py-4 bg-teal-600 text-white rounded-xl font-semibold shadow-lg hover:bg-teal-700 transition-all flex items-center justify-center space-x-2"
+        >
+          <span>Começar Planejamento</span>
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </div>
     </div>
   );
 
@@ -117,7 +141,13 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
           className="w-full px-4 py-3 rounded-lg border border-black bg-white focus:ring-2 focus:ring-teal-500 outline-none text-lg text-slate-900"
         />
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-between pt-4">
+        <button
+          onClick={() => setStep(AppStep.WELCOME)}
+          className="px-6 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+        >
+          Voltar
+        </button>
         <button
           onClick={() => setStep(AppStep.INTERVIEW_SUBJECTS)}
           className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium"

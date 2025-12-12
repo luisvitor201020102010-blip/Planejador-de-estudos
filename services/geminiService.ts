@@ -15,6 +15,8 @@ export const generateStudyPlan = async (data: InterviewData): Promise<PlannerOut
   const userContext = `
     DADOS DO USUÁRIO (ENTREVISTA):
     
+    Nome do Aluno: ${data.userName}
+
     1. Disciplinas (${data.subjectCount}):
     ${data.subjects.map(s => 
       `- ${s.name}: Dificuldade ${s.difficulty}, Prioridade ${s.priority}, Objetivo: ${s.goal}`

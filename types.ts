@@ -13,6 +13,7 @@ export interface Subject {
 }
 
 export interface InterviewData {
+  userName: string;
   subjectCount: number;
   subjects: Subject[];
   hoursPerDay: number;
