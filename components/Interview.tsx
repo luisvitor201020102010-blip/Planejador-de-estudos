@@ -501,4 +501,6 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
         </div>
       </div>
     </div>
+      );
+    };
 };
