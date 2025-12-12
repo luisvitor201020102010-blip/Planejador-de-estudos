@@ -9,6 +9,61 @@ interface InterviewProps {
   step: AppStep;
 }
 
+// Helper components defined outside to prevent recreation on each render
+const TipBox = ({ children }: { children: React.ReactNode }) => (
+  <div className="bg-cyan-50/50 border border-cyan-100 rounded-lg p-4 mb-6 flex gap-3 text-sm text-slate-600">
+    <Lightbulb className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+    <div className="leading-relaxed">
+      <span className="font-bold text-slate-700 block mb-1">Baseado em neurociência:</span>
+      {children}
+    </div>
+  </div>
+);
+
+const ModernInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
+  <input 
+    {...props}
+    className={`
+      w-full px-4 py-3 rounded-lg border border-slate-300 bg-white 
+      text-slate-800 placeholder:text-slate-400 text-sm transition-all
+      focus:border-[#0e7490] focus:ring-2 focus:ring-[#0e7490]/20 outline-none
+      ${props.className}
+    `}
+  />
+);
+
+const ModernSelect = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => (
+  <div className="relative">
+    <select 
+      {...props}
+      className={`
+        w-full px-4 py-3 rounded-lg border border-slate-300 bg-white 
+        text-slate-800 text-sm transition-all appearance-none
+        focus:border-[#0e7490] focus:ring-2 focus:ring-[#0e7490]/20 outline-none
+        ${props.className}
+      `}
+    />
+    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </div>
+);
+
+const PrimaryButton = ({ onClick, children, className = "" }: any) => (
+  <button
+    onClick={onClick}
+    className={`
+      w-full py-3.5 bg-[#155e75] text-white rounded-lg font-semibold text-sm
+      hover:bg-[#0e7490] transition-colors shadow-sm active:translate-y-0.5
+      flex items-center justify-center gap-2
+      ${className}
+    `}
+  >
+    {children}
+  </button>
+);
+
+
 export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep }) => {
   const [data, setData] = useState<InterviewData>({
     userName: '',
@@ -72,59 +127,12 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
     );
   };
 
-  const TipBox = ({ children }: { children: React.ReactNode }) => (
-    <div className="bg-cyan-50/50 border border-cyan-100 rounded-lg p-4 mb-6 flex gap-3 text-sm text-slate-600">
-      <Lightbulb className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-      <div className="leading-relaxed">
-        <span className="font-bold text-slate-700 block mb-1">Baseado em neurociência:</span>
-        {children}
-      </div>
+  
+  
     </div>
   );
 
-  const ModernInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-    <input 
-      {...props}
-      className={`
-        w-full px-4 py-3 rounded-lg border border-slate-300 bg-white 
-        text-slate-800 placeholder:text-slate-400 text-sm transition-all
-        focus:border-[#0e7490] focus:ring-2 focus:ring-[#0e7490]/20 outline-none
-        ${props.className}
-      `}
-    />
-  );
-
-  const ModernSelect = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => (
-    <div className="relative">
-      <select 
-        {...props}
-        className={`
-          w-full px-4 py-3 rounded-lg border border-slate-300 bg-white 
-          text-slate-800 text-sm transition-all appearance-none
-          focus:border-[#0e7490] focus:ring-2 focus:ring-[#0e7490]/20 outline-none
-          ${props.className}
-        `}
-      />
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-      </div>
-    </div>
-  );
-
-  const PrimaryButton = ({ onClick, children, className = "" }: any) => (
-    <button
-      onClick={onClick}
-      className={`
-        w-full py-3.5 bg-[#155e75] text-white rounded-lg font-semibold text-sm
-        hover:bg-[#0e7490] transition-colors shadow-sm active:translate-y-0.5
-        flex items-center justify-center gap-2
-        ${className}
-      `}
-    >
-      {children}
-    </button>
-  );
-
+  
   // --- Render Steps (Left Panel of Split View) ---
 
   const renderQuantityForm = () => (
