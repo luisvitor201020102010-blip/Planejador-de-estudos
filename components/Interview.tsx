@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppStep, Difficulty, InterviewData, Subject } from '../types';
 import { METHODOLOGIES } from '../constants';
-import { Plus, Trash2, ArrowRight, BookOpen, Clock, Brain, User } from 'lucide-react';
+import { Plus, Trash2, Clock, Brain, User, ListChecks, ChevronLeft, Lightbulb, BarChart3, BookOpen } from 'lucide-react';
 
 interface InterviewProps {
   onComplete: (data: InterviewData) => void;
@@ -12,7 +12,7 @@ interface InterviewProps {
 export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep }) => {
   const [data, setData] = useState<InterviewData>({
     userName: '',
-    subjectCount: 1,
+    subjectCount: 8,
     subjects: [{ id: '1', name: '', difficulty: Difficulty.MEDIO, priority: 1, goal: 'Revisar base' }],
     hoursPerDay: 4,
     daysPerWeek: 6,
@@ -55,65 +55,87 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
     }));
   };
 
-  const renderWelcome = () => (
-    <div className="flex flex-col items-center justify-center space-y-8 py-10 animate-fade-in">
-      <div className="p-4 bg-teal-50 rounded-full">
-        <Brain className="w-16 h-16 text-teal-600" />
-      </div>
-      <div className="text-center space-y-4 max-w-2xl">
-        <h1 className="text-4xl font-bold text-slate-800">Planejador de Estudos</h1>
-        <p className="text-lg text-slate-600 leading-relaxed">
-          Crie um plano de estudos personalizado para medicina baseado em neurociência.
-          Utilizamos algoritmos de recuperação ativa, revisão espaçada e prática intercalada 
-          para maximizar sua retenção.
-        </p>
-        <div className="pt-4 text-slate-500 font-medium">
-          <p>Criado por: Luís Vitor Maciel Amorim</p>
-          <p className="text-teal-600">Siga no Instagram @luis_vitor_med</p>
-        </div>
-      </div>
-      
-      <div className="w-full max-w-md space-y-4">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-           <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
-             <User className="w-4 h-4 text-teal-600" />
-             Qual seu nome?
-           </label>
-           <input 
-             type="text" 
-             placeholder="Digite seu nome"
-             value={data.userName}
-             onChange={(e) => setData({...data, userName: e.target.value})}
-             className="w-full px-4 py-3 rounded-lg border border-black bg-white focus:ring-2 focus:ring-teal-500 outline-none text-lg text-slate-900 placeholder:text-slate-400"
-           />
-        </div>
+  // --- UI Components ---
 
-        <button
-          onClick={() => {
-             if (data.userName.trim() === '') {
-                 alert("Por favor, digite seu nome para continuar.");
-                 return;
-             }
-             setStep(AppStep.INTERVIEW_QUANTITY);
-          }}
-          className="w-full group px-8 py-4 bg-teal-600 text-white rounded-xl font-semibold shadow-lg hover:bg-teal-700 transition-all flex items-center justify-center space-x-2"
-        >
-          <span>Começar Planejamento</span>
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </button>
+  const ProgressBar = () => {
+    const steps = [AppStep.WELCOME, AppStep.INTERVIEW_QUANTITY, AppStep.INTERVIEW_SUBJECTS, AppStep.INTERVIEW_LOGISTICS];
+    const currentIndex = steps.indexOf(step);
+    const progress = Math.max(5, ((currentIndex + 1) / steps.length) * 100);
+
+    return (
+      <div className="w-full h-1.5 bg-slate-100 rounded-full mb-6 overflow-hidden">
+        <div 
+          className="h-full bg-[#0e7490] transition-all duration-500 ease-out" 
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    );
+  };
+
+  const TipBox = ({ children }: { children: React.ReactNode }) => (
+    <div className="bg-cyan-50/50 border border-cyan-100 rounded-lg p-4 mb-6 flex gap-3 text-sm text-slate-600">
+      <Lightbulb className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+      <div className="leading-relaxed">
+        <span className="font-bold text-slate-700 block mb-1">Baseado em neurociência:</span>
+        {children}
       </div>
     </div>
   );
 
-  const renderQuantity = () => (
-    <div className="max-w-xl mx-auto space-y-6 animate-fade-in">
-      <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-        <BookOpen className="text-teal-600" />
-        Quantas disciplinas você vai estudar?
-      </h2>
-      <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-200">
-        <label className="block text-sm font-medium text-slate-700 mb-2">Número de Disciplinas (1-15)</label>
-        <input
+  const ModernInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
+    <input 
+      {...props}
+      className={`
+        w-full px-4 py-3 rounded-lg border border-slate-300 bg-white 
+        text-slate-800 placeholder:text-slate-400 text-sm transition-all
+        focus:border-[#0e7490] focus:ring-2 focus:ring-[#0e7490]/20 outline-none
+        ${props.className}
+      `}
+    />
+  );
+
+  const ModernSelect = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => (
+    <div className="relative">
+      <select 
+        {...props}
+        className={`
+          w-full px-4 py-3 rounded-lg border border-slate-300 bg-white 
+          text-slate-800 text-sm transition-all appearance-none
+          focus:border-[#0e7490] focus:ring-2 focus:ring-[#0e7490]/20 outline-none
+          ${props.className}
+        `}
+      />
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  );
+
+  const PrimaryButton = ({ onClick, children, className = "" }: any) => (
+    <button
+      onClick={onClick}
+      className={`
+        w-full py-3.5 bg-[#155e75] text-white rounded-lg font-semibold text-sm
+        hover:bg-[#0e7490] transition-colors shadow-sm active:translate-y-0.5
+        flex items-center justify-center gap-2
+        ${className}
+      `}
+    >
+      {children}
+    </button>
+  );
+
+  // --- Render Steps (Left Panel of Split View) ---
+
+  const renderQuantityForm = () => (
+    <div className="animate-fade-in">
+      <TipBox>
+        Alternar entre matérias (prática intercalada) melhora a retenção mais do que estudar uma única coisa por horas.
+      </TipBox>
+
+      <div className="space-y-4">
+        <label className="block text-sm font-bold text-slate-700">Quantas disciplinas deseja estudar? (1-15)</label>
+        <ModernInput
           type="number"
           min="1"
           max="15"
@@ -121,7 +143,6 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
           onChange={(e) => {
             const count = parseInt(e.target.value) || 1;
             const validCount = Math.max(1, Math.min(15, count));
-            // Adjust array size
             const newSubjects = [...data.subjects];
             if (validCount > newSubjects.length) {
               for (let i = newSubjects.length; i < validCount; i++) {
@@ -138,112 +159,80 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
             }
             setData({ ...data, subjectCount: validCount, subjects: newSubjects });
           }}
-          className="w-full px-4 py-3 rounded-lg border border-black bg-white focus:ring-2 focus:ring-teal-500 outline-none text-lg text-slate-900"
+          className="text-lg"
         />
-      </div>
-      <div className="flex justify-between pt-4">
-        <button
-          onClick={() => setStep(AppStep.WELCOME)}
-          className="px-6 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
-        >
-          Voltar
-        </button>
-        <button
-          onClick={() => setStep(AppStep.INTERVIEW_SUBJECTS)}
-          className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium"
-        >
-          Próximo: Detalhar Disciplinas
-        </button>
+        
+        <PrimaryButton onClick={() => setStep(AppStep.INTERVIEW_SUBJECTS)}>
+          Próximo: Informar Disciplinas
+        </PrimaryButton>
       </div>
     </div>
   );
 
-  const renderSubjects = () => (
-    <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-slate-800">Detalhes das Disciplinas</h2>
-        <button onClick={addSubject} className="text-teal-600 hover:text-teal-700 flex items-center gap-1 font-medium">
-          <Plus className="w-4 h-4" /> Adicionar
+  const renderSubjectsForm = () => (
+    <div className="animate-fade-in flex flex-col h-full">
+      <div className="mb-4 flex justify-between items-center">
+        <p className="text-sm text-slate-500">Preencha os detalhes para calibrar a dificuldade.</p>
+        <button 
+          onClick={addSubject}
+          className="text-xs font-bold text-[#0e7490] hover:underline flex items-center gap-1"
+        >
+          <Plus className="w-3 h-3" /> Adicionar
         </button>
       </div>
-      
-      <div className="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar p-1">
+
+      <div className="space-y-4 flex-1 overflow-y-auto max-h-[500px] custom-scrollbar pr-2 mb-6">
         {data.subjects.map((subject, index) => (
-          <div key={subject.id} className="p-6 bg-white rounded-xl shadow-sm border border-slate-200 transition-shadow hover:shadow-md">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 space-y-2">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nome da Disciplina</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Cardiologia"
-                  value={subject.name}
-                  onChange={(e) => handleSubjectChange(subject.id, 'name', e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-black bg-white focus:border-teal-500 outline-none text-slate-900"
-                />
-              </div>
-              
-              <div className="w-full md:w-32 space-y-2">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Dificuldade</label>
-                <select
-                  value={subject.difficulty}
-                  onChange={(e) => handleSubjectChange(subject.id, 'difficulty', e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-black bg-white focus:border-teal-500 outline-none text-slate-900"
-                >
-                  <option value={Difficulty.FACIL}>Fácil</option>
-                  <option value={Difficulty.MEDIO}>Médio</option>
-                  <option value={Difficulty.DIFICIL}>Difícil</option>
-                </select>
-              </div>
-
-              <div className="w-full md:w-24 space-y-2">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Prioridade</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={subject.priority}
-                  onChange={(e) => handleSubjectChange(subject.id, 'priority', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg border border-black bg-white focus:border-teal-500 outline-none text-slate-900"
-                />
-              </div>
-
-              <div className="flex-1 space-y-2">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Objetivo</label>
-                <select
-                  value={subject.goal}
-                  onChange={(e) => handleSubjectChange(subject.id, 'goal', e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-black bg-white focus:border-teal-500 outline-none text-slate-900"
-                >
-                  <option>Revisar base</option>
-                  <option>Fixar detalhes</option>
-                  <option>Treinar questões</option>
-                  <option>Simulados</option>
-                </select>
-              </div>
-
-              <div className="flex items-end pb-2">
+          <div key={subject.id} className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
+             <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Disciplina {index + 1}</span>
                 <button 
                   onClick={() => removeSubject(subject.id)}
-                  className="text-red-400 hover:text-red-600 transition-colors p-2"
                   disabled={data.subjects.length === 1}
+                  className="text-slate-400 hover:text-red-500 disabled:opacity-30"
                 >
-                  <Trash2 className="w-5 h-5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
-              </div>
-            </div>
+             </div>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+               <div className="md:col-span-2">
+                 <ModernInput
+                    placeholder="Nome da Matéria (Ex: Cardiologia)"
+                    value={subject.name}
+                    onChange={(e) => handleSubjectChange(subject.id, 'name', e.target.value)}
+                 />
+               </div>
+               <ModernSelect
+                  value={subject.difficulty}
+                  onChange={(e) => handleSubjectChange(subject.id, 'difficulty', e.target.value)}
+               >
+                  <option value={Difficulty.FACIL}>🟢 Fácil</option>
+                  <option value={Difficulty.MEDIO}>🟡 Médio</option>
+                  <option value={Difficulty.DIFICIL}>🔴 Difícil</option>
+               </ModernSelect>
+               <ModernSelect
+                  value={subject.goal}
+                  onChange={(e) => handleSubjectChange(subject.id, 'goal', e.target.value)}
+               >
+                  <option>Revisar base</option>
+                  <option>Aprofundar</option>
+                  <option>Questões</option>
+               </ModernSelect>
+             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex justify-between pt-4">
-        <button
-          onClick={() => setStep(AppStep.INTERVIEW_QUANTITY)}
-          className="px-6 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+      <div className="flex gap-3 mt-auto pt-4 border-t border-slate-100">
+        <button 
+           onClick={() => setStep(AppStep.INTERVIEW_QUANTITY)}
+           className="px-4 py-3 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 font-medium text-sm"
         >
-          Voltar
+          <ChevronLeft className="w-5 h-5" />
         </button>
-        <button
+        <PrimaryButton 
           onClick={() => {
-            // Simple validation
             const hasEmpty = data.subjects.some(s => !s.name.trim());
             if (hasEmpty) {
               alert("Por favor, preencha o nome de todas as disciplinas.");
@@ -251,97 +240,264 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
             }
             setStep(AppStep.INTERVIEW_LOGISTICS);
           }}
-          className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium"
         >
-          Próximo: Logística
-        </button>
+          Próximo: Rotina
+        </PrimaryButton>
       </div>
     </div>
   );
 
-  const renderLogistics = () => (
-    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-      <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-        <Clock className="text-teal-600" />
-        Logística e Preferências
-      </h2>
+  const renderLogisticsForm = () => (
+    <div className="animate-fade-in">
+       <TipBox>
+         O ideal para memória de longo prazo é espaçar as sessões ao longo da semana, em vez de um "intensivão" num dia só.
+       </TipBox>
+
+       <div className="space-y-5">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-500 mb-1">Horas/Dia</label>
+              <ModernInput
+                type="number"
+                min="1"
+                max="16"
+                value={data.hoursPerDay}
+                onChange={(e) => setData({ ...data, hoursPerDay: parseInt(e.target.value) })}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 mb-1">Dias/Semana</label>
+              <ModernInput
+                type="number"
+                min="1"
+                max="7"
+                value={data.daysPerWeek}
+                onChange={(e) => setData({ ...data, daysPerWeek: parseInt(e.target.value) })}
+              />
+            </div>
+          </div>
+
+          <div>
+             <div className="flex justify-between mb-2">
+               <label className="text-sm font-bold text-slate-700">Foco em Estudo Ativo</label>
+               <span className="text-xs font-bold text-[#0e7490] bg-cyan-50 px-2 py-0.5 rounded">{data.activeMethodologyFocus}%</span>
+             </div>
+             <input
+                type="range"
+                min="0"
+                max="100"
+                step="10"
+                value={data.activeMethodologyFocus}
+                onChange={(e) => setData({ ...data, activeMethodologyFocus: parseInt(e.target.value) })}
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0e7490]"
+              />
+              <p className="text-xs text-slate-400 mt-1">Quanto maior, mais questões e flashcards.</p>
+          </div>
+
+          <div className="flex gap-3 pt-6">
+            <button 
+              onClick={() => setStep(AppStep.INTERVIEW_SUBJECTS)}
+              className="px-4 py-3 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 font-medium text-sm"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <PrimaryButton onClick={() => onComplete(data)}>
+               <Brain className="w-4 h-4 mr-1" /> Gerar Plano
+            </PrimaryButton>
+          </div>
+       </div>
+    </div>
+  );
+
+  // --- Right Panel Summary (Split View) ---
+  
+  const SummaryPanel = () => {
+    const filledSubjects = data.subjects.filter(s => s.name.trim() !== "").length;
+    
+    return (
+      <div className="h-full flex flex-col">
+         {data.userName ? (
+            <div className="space-y-6 animate-fade-in">
+               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+                  <div className="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center text-[#0e7490] font-bold text-lg">
+                    {data.userName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-800">{data.userName}</h3>
+                    <p className="text-xs text-slate-500">Futuro(a) Aprovado(a)</p>
+                  </div>
+               </div>
+
+               <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <ListChecks className="w-5 h-5 text-slate-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-700">Disciplinas</p>
+                      <p className="text-xs text-slate-500">
+                        {filledSubjects} de {data.subjectCount} definidas
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {data.subjects.filter(s => s.name).slice(0, 5).map(s => (
+                          <span key={s.id} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded-full border border-slate-200">
+                            {s.name}
+                          </span>
+                        ))}
+                        {data.subjects.filter(s => s.name).length > 5 && (
+                          <span className="text-[10px] text-slate-400 px-1 py-1">+{data.subjects.filter(s => s.name).length - 5}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-slate-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-700">Meta de Tempo</p>
+                      <p className="text-xs text-slate-500">
+                        {data.hoursPerDay}h por dia • {data.daysPerWeek} dias/sem
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <BarChart3 className="w-5 h-5 text-slate-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-700">Metodologia</p>
+                      <div className="w-full bg-slate-100 rounded-full h-2 mt-2 mb-1 w-32">
+                         <div className="bg-teal-500 h-2 rounded-full" style={{ width: `${data.activeMethodologyFocus}%` }}></div>
+                      </div>
+                      <p className="text-[10px] text-slate-500">{data.activeMethodologyFocus}% Ativo</p>
+                    </div>
+                  </div>
+               </div>
+            </div>
+         ) : (
+           <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 p-4">
+              <User className="w-12 h-12 mb-3 opacity-20" />
+              <p className="text-sm">Configure o plano à esquerda para ver o resumo aqui...</p>
+           </div>
+         )}
+      </div>
+    );
+  };
+
+  // --- Render Landing Page (Welcome Step) ---
+
+  const renderLandingPage = () => (
+    <div className="flex-1 w-full flex flex-col items-center justify-center px-4 py-12 text-center animate-fade-in">
+      {/* Brain Icon - Ocean Blue (~1 inch / w-24) */}
+      <Brain className="w-24 h-24 text-[#155e75] mb-6" strokeWidth={1.5} />
       
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Horas de estudo (dia)</label>
-            <input
-              type="number"
-              min="1"
-              max="24"
-              value={data.hoursPerDay}
-              onChange={(e) => setData({ ...data, hoursPerDay: parseInt(e.target.value) })}
-              className="w-full px-4 py-2 rounded-lg border border-black bg-white focus:ring-2 focus:ring-teal-500 outline-none text-slate-900"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Dias por semana</label>
-            <input
-              type="number"
-              min="1"
-              max="7"
-              value={data.daysPerWeek}
-              onChange={(e) => setData({ ...data, daysPerWeek: parseInt(e.target.value) })}
-              className="w-full px-4 py-2 rounded-lg border border-black bg-white focus:ring-2 focus:ring-teal-500 outline-none text-slate-900"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">Horário preferencial (ex: 08:00-12:00)</label>
-          <input
-            type="text"
-            value={data.timeSlots}
-            onChange={(e) => setData({ ...data, timeSlots: e.target.value })}
-            className="w-full px-4 py-2 rounded-lg border border-black bg-white focus:ring-2 focus:ring-teal-500 outline-none text-slate-900"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <label className="block text-sm font-medium text-slate-700">Foco em Metodologia Ativa</label>
-            <span className="text-sm font-bold text-teal-600">{data.activeMethodologyFocus}%</span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="10"
-            value={data.activeMethodologyFocus}
-            onChange={(e) => setData({ ...data, activeMethodologyFocus: parseInt(e.target.value) })}
-            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
-          />
-          <p className="text-xs text-slate-500">Recomendado: 80%+</p>
-        </div>
+      {/* Title - Black */}
+      <h1 className="text-4xl md:text-5xl font-bold text-black mb-4 tracking-tight">
+        Planejador de Estudos
+      </h1>
+      
+      {/* Subtitle - Black */}
+      <p className="text-black text-lg max-w-3xl leading-relaxed mb-6">
+        Cronograma inteligente com metodologias ativas baseadas em neurociência. 
+        Este planejador integra recuperação ativa, revisão espaçada, prática intercalada, 
+        autoexplicação e técnica de Feynman.
+      </p>
+      
+      {/* Credits - Black */}
+      <div className="space-y-1 mb-12">
+        <p className="text-black font-medium">Desenvolvido por Luis Vitor Maciel Amorim</p>
+        <p className="text-black text-sm">siga @luis_vitor_med para mais conteúdos assim</p>
       </div>
 
-      <div className="flex justify-between pt-4">
+      {/* Start Section - Gear + Header */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-2xl">⚙️</span>
+        <h2 className="text-2xl font-bold text-black">Comece a construir seu Plano</h2>
+      </div>
+
+      {/* Input Section */}
+      <div className="w-full max-w-sm space-y-4">
+        <div className="text-left">
+          <label className="block text-black mb-2 font-medium">Qual é o seu nome?</label>
+          <input 
+            type="text" 
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-black placeholder:text-slate-400 focus:border-[#155e75] focus:ring-2 focus:ring-[#155e75]/20 outline-none transition-all"
+            value={data.userName}
+            onChange={(e) => setData({...data, userName: e.target.value})}
+            placeholder="Digite seu nome..."
+          />
+        </div>
+
+        {/* Button - Ocean Blue Background, Black Text, White Border */}
         <button
-          onClick={() => setStep(AppStep.INTERVIEW_SUBJECTS)}
-          className="px-6 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+          onClick={() => {
+            if (data.userName.trim() === '') return;
+            setStep(AppStep.INTERVIEW_QUANTITY);
+          }}
+          className="w-full py-4 bg-[#155e75] text-black border-2 border-white rounded-lg font-bold text-lg hover:opacity-90 transition-all shadow-lg active:translate-y-0.5"
         >
-          Voltar
-        </button>
-        <button
-          onClick={() => onComplete(data)}
-          className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-        >
-          Gerar Cronograma
+          Próximo
         </button>
       </div>
     </div>
   );
 
-  switch (step) {
-    case AppStep.WELCOME: return renderWelcome();
-    case AppStep.INTERVIEW_QUANTITY: return renderQuantity();
-    case AppStep.INTERVIEW_SUBJECTS: return renderSubjects();
-    case AppStep.INTERVIEW_LOGISTICS: return renderLogistics();
-    default: return null;
+  // --- Main Layout Controller ---
+
+  // If Welcome Step, use the specific landing page layout
+  if (step === AppStep.WELCOME) {
+    return renderLandingPage();
   }
+
+  // For other steps, use the Split View layout with the Header
+  return (
+    <div>
+      {/* Re-introduce the Header for the inner pages to maintain the "previous layout" request */}
+      <header className="bg-[#155e75] text-white py-8 border-b-4 border-[#0e7490] shadow-md mb-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <BookOpen className="w-8 h-8 text-cyan-300" />
+            <h1 className="text-3xl font-bold tracking-tight">Planejador de Estudos para Medicina</h1>
+          </div>
+          <p className="text-cyan-100 text-sm font-medium">
+            Cronograma inteligente com metodologias ativas baseadas em neurociência
+          </p>
+        </div>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start max-w-7xl mx-auto">
+        {/* Left Column: Form Card */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
+          {/* Card Header */}
+          <div className="px-6 py-5 border-b border-slate-100 flex items-center gap-2">
+              <div className="bg-cyan-50 p-1.5 rounded-md">
+                <span className="animate-spin-slow">⚙️</span>
+              </div>
+              <h2 className="text-lg font-bold text-[#155e75]">Configurar seu Plano</h2>
+          </div>
+          
+          {/* Card Content */}
+          <div className="p-6 flex-1 flex flex-col">
+              <ProgressBar />
+              <div className="flex-1">
+                {/* Note: Welcome form is handled by renderLandingPage now */}
+                {step === AppStep.INTERVIEW_QUANTITY && renderQuantityForm()}
+                {step === AppStep.INTERVIEW_SUBJECTS && renderSubjectsForm()}
+                {step === AppStep.INTERVIEW_LOGISTICS && renderLogisticsForm()}
+              </div>
+          </div>
+        </div>
+
+        {/* Right Column: Summary Card */}
+        <div className="hidden lg:block lg:col-span-1 bg-white rounded-xl shadow-md border border-slate-200 h-full min-h-[500px] flex flex-col">
+          <div className="px-6 py-5 border-b border-slate-100 flex items-center gap-2">
+              <div className="bg-emerald-50 p-1.5 rounded-md">
+                📊
+              </div>
+              <h2 className="text-lg font-bold text-[#155e75]">Resumo Atual</h2>
+          </div>
+          <div className="p-6 flex-1">
+              <SummaryPanel />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
