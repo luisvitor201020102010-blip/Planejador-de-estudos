@@ -125,13 +125,7 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
         />
       </div>
     );
-  };
-
   
-  
-    </div>
-  );
-
   
   // --- Render Steps (Left Panel of Split View) ---
 
@@ -507,5 +501,4 @@ export const Interview: React.FC<InterviewProps> = ({ onComplete, step, setStep 
         </div>
       </div>
     </div>
-  );
 };
