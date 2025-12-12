@@ -3,7 +3,7 @@ import { AppStep, InterviewData, PlannerOutput } from './types';
 import { Interview } from './components/Interview';
 import { Dashboard } from './components/Dashboard';
 import { generateStudyPlan } from './services/geminiService';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, X } from 'lucide-react';
 
 const App: React.FC = () => {
   const [step, setStep] = useState<AppStep>(AppStep.WELCOME);
@@ -17,9 +17,9 @@ const App: React.FC = () => {
       const result = await generateStudyPlan(data);
       setPlannerData(result);
       setStep(AppStep.DASHBOARD);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError("Falha ao gerar o cronograma. Verifique sua chave de API ou tente novamente.");
+      setError(err.message || "Falha ao gerar o cronograma. Verifique sua chave de API ou tente novamente.");
       setStep(AppStep.INTERVIEW_LOGISTICS);
     }
   };
@@ -28,7 +28,7 @@ const App: React.FC = () => {
     switch (step) {
       case AppStep.GENERATING:
         return (
-          <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-800 p-4 text-center">
+          <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-800 p-4 text-center animate-fade-in">
             <Loader2 className="w-16 h-16 text-teal-600 animate-spin mb-6" />
             <h2 className="text-2xl font-bold mb-2">Gerando seu Planejamento...</h2>
             <p className="text-slate-600 max-w-md">
@@ -41,11 +41,19 @@ const App: React.FC = () => {
         return <Dashboard data={plannerData} onReset={() => setStep(AppStep.WELCOME)} />;
       default:
         return (
-          <div className="min-h-screen bg-slate-50">
+          <div className="min-h-screen bg-slate-50 relative">
             {error && (
-              <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-center gap-2 z-50 shadow-lg">
-                <AlertCircle className="w-5 h-5" />
-                <span>{error}</span>
+              <div className="fixed top-0 left-0 right-0 p-4 z-50 flex justify-center animate-fade-in">
+                <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg flex items-start gap-3 max-w-lg w-full">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">Erro</p>
+                    <p className="text-sm">{error}</p>
+                  </div>
+                  <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             )}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

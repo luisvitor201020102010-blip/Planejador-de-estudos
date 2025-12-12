@@ -2,7 +2,8 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0d9488" />
     <title>Planejador de Estudos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,6 +24,10 @@
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #a8a8a8;
+      }
+      /* Prevent iOS zoom on inputs */
+      input, select, textarea {
+        font-size: 16px !important;
       }
     </style>
   <script type="importmap">
